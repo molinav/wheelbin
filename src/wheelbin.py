@@ -54,7 +54,8 @@ def is_python_file(path):
     if str(path).endswith(".py"):
         return True
 
-    if "Python script, ASCII text executable" in magic.from_file(path):
+    header = magic.from_file(path)
+    if re.match(r"Python script, ASCII text executable.*", header):
         return True
 
     return False
