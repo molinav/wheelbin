@@ -257,10 +257,15 @@ def main(args=None):
     """Entry point for wheelbin."""
 
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("whl_file",
-                        help="Path to wheel to convert")
-    parser.add_argument("--ignore", type=str, default=None,
-                        help="Pattern of Python files to be ignored")
+    parser.add_argument(
+        "whl_file",
+        help="path to wheel being converted")
+    parser.add_argument(
+        "--ignore", type=str, default=None,
+        help="pattern for files that skip compilation")
+    parser.add_argument(
+        "-v", "--version", action="version",
+        version="%(prog)s {0}".format(__version__))
     args = parser.parse_args(args)
     convert_wheel(args.whl_file, ignore=args.ignore)
 
