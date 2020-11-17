@@ -3,7 +3,7 @@
 """wheelbin -- Compile all Python files inside a wheel to bytecode files."""
 from __future__ import print_function
 
-__version__ = "1.1.0"
+__version__ = "1.1.0+dev"
 __author__ = "Grant Patten <grant@gpatten.com>"
 
 import os
