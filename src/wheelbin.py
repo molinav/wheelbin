@@ -2,18 +2,25 @@
 # -*- coding: utf8 -*-
 """wheelbin -- Compile all py files in a wheel to pyc files."""
 
-import csv
-import shutil
+__version__ = "1.0.0+dev"
+__author__ = "Grant Patten <grant@gpatten.com>"
+
 import os
+import shutil
+
 import re
-import argparse
-from zipfile import ZipFile
-from zipfile import ZipInfo
-import hashlib
+import fnmatch
+
+import csv
 import json
 import base64
+import hashlib
 import py_compile
-import fnmatch
+from zipfile import ZipFile
+from zipfile import ZipInfo
+
+import argparse
+
 try:
     from winmagic import magic
 except ImportError:
@@ -22,9 +29,6 @@ except ImportError:
     except ImportError:
         magic = None
 
-
-__version__ = "1.0.0+dev"
-__author__ = "Grant Patten <grant@gpatten.com>"
 
 CHUNK_SIZE = 1024
 HASH_TYPE = "sha256"
