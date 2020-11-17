@@ -10,7 +10,7 @@ import hashlib
 import json
 import base64
 
-__version__ = "1.0.0"
+__version__ = "1.0.0+dev"
 __author__ = "Grant Patten <grant@gpatten.com>"
 
 CHUNK_SIZE = 1024
