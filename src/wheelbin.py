@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf8 -*-
 """wheelbin -- Compile all Python files inside a wheel to bytecode files."""
+from __future__ import print_function
 
 __version__ = "1.0.0+dev"
 __author__ = "Grant Patten <grant@gpatten.com>"
@@ -110,8 +111,9 @@ def convert_wheel(whl_file, ignore=None):
             ipath = os.path.join(root, f)
             if is_python_file(ipath):
 
+                ipath_rel = os.path.relpath(ipath, whl_name)
                 if ignore is not None and fnmatch.fnmatch(ipath, ignore):
-                    print("Skipping file: {0}".format(os.path.relpath(ipath, whl_name)))
+                    print("Skipping file: {0}".format(ipath_rel))
                     continue
 
                 # Define bytecode file path.
@@ -125,7 +127,7 @@ def convert_wheel(whl_file, ignore=None):
                 opath = "{0}{1}".format(iname, oext)
 
                 # Compile the file.
-                print("Compiling file: {0}".format(os.path.relpath(ipath, whl_name)))
+                print("Compiling file: {0}".format(ipath_rel))
                 py_compile.compile(ipath, opath)
 
                 # Keep the file permissions in the new file.
@@ -133,10 +135,10 @@ def convert_wheel(whl_file, ignore=None):
                 os.chmod(opath, ipath_chmod)
 
                 if os.name != "nt" and oext == "":
-                    print("Renaming file: {0}".format(os.path.relpath(ipath, whl_name)))
+                    print("Renaming file: {0}".format(ipath_rel))
                     os.rename(opath, iname)
                 else:
-                    print("Removing file: {0}".format(os.path.relpath(ipath, whl_name)))
+                    print("Removing file: {0}".format(ipath_rel))
                     os.remove(ipath)
 
     # Update the record data.
