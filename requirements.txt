@@ -1,0 +1,2 @@
+python-magic; platform_system != "Windows"
+python-magic-w64; platform_system == "Windows"
