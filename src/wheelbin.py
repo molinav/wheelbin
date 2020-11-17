@@ -9,12 +9,36 @@ import zipfile
 import hashlib
 import json
 import base64
+import py_compile
+try:
+    from winmagic import magic
+except ImportError:
+    try:
+        import magic
+    except ImportError:
+        magic = None
+
 
 __version__ = "1.0.0+dev"
 __author__ = "Grant Patten <grant@gpatten.com>"
 
 CHUNK_SIZE = 1024
 HASH_TYPE = "sha256"
+
+
+def is_python_file(path):
+    """Return if a path is (very likely) a Python file."""
+
+    if magic is None:
+        raise ImportError("No module named magic")
+
+    if str(path).endswith(".py"):
+        return True
+
+    if "Python script, ASCII text executable" in magic.from_file(path):
+        return True
+
+    return False
 
 
 def convert_wheel(whl_file):
@@ -35,20 +59,30 @@ def convert_wheel(whl_file):
     with zipfile.ZipFile(whl_file, "r") as whl_zip:
         whl_zip.extractall(whl_name)
 
-    # Replace all py files with pyc files
-    compileall.compile_dir(whl_name)
-
-    # Remove all original py files
-    for py_file in glob.glob(whl_name + "/**/*.py"):
-        print "Deleting py file: %s" % py_file
-        os.remove(py_file)
-
+    # Loop over files inside the wheel package.
     for root, _dirs, files in os.walk(whl_name):
         for f in files:
-            if f.endswith(".py"):
-                py_name = os.path.join(root, f)
-                print "Removing file: %s" % py_name
-                os.remove(py_name)
+            ipath = os.path.join(root, f)
+            if is_python_file(ipath):
+
+                # Define bytecode file path.
+                iname, iext = os.path.splitext(ipath)
+                if iext == ".py":
+                    oext = ".pyc"
+                elif iext == "":
+                    oext = ".exe" if os.name == "nt" else ""
+                else:
+                    raise ValueError(iname, iext)
+                opath = "{0}{1}".format(iname, oext)
+
+                # Compile the file.
+                py_compile.compile(ipath, opath)
+                if os.name != "nt" and oext == "":
+                    print("Renaming file: {0}".format(os.path.basename(ipath)))
+                    os.rename(opath, iname)
+                else:
+                    print("Removing file: {0}".format(os.path.basename(ipath)))
+                    os.remove(ipath)
 
     # Update the record data
     dist_info = "%s.dist-info" % ("-".join(whl_name.split("-")[:-3]))
@@ -77,13 +111,28 @@ def rewrite_record(record_path):
 
     with open(record_path, "r") as record:
         for file_dest, hash_, length in csv.reader(record):
-            if file_dest.endswith(".py"):
+
+            ipath = os.path.join(whl_path, file_dest)
+            if os.path.exists(ipath) and not is_python_file(ipath):
+                record_data.append((file_dest, hash_, length))
+            else:
+
+                # Define bytecode file path.
+                iname, iext = os.path.splitext(ipath)
+                if iext == ".py":
+                    oext = ".pyc"
+                elif iext == "":
+                    oext = ".exe" if os.name == "nt" else ""
+                else:
+                    raise ValueError(iname, iext)
+                opath = "{0}{1}".format(iname, oext)
+                odest_file = os.path.relpath(opath, whl_path)
+
                 # Do not keep py files, replace with pyc files
                 file_length = 0
                 hash_ = hashlib.new(HASH_TYPE)
 
-                pyc_file = file_dest + "c"
-                with open(os.path.join(whl_path, pyc_file), "rb") as f:
+                with open(opath, "rb") as f:
                     while True:
                         data = f.read(1024)
 
@@ -95,9 +144,7 @@ def rewrite_record(record_path):
 
                 hash_value = base64.urlsafe_b64encode(hash_.digest()).rstrip('=')
                 hash_value = "%s=%s" % (HASH_TYPE, hash_value)
-                record_data.append((pyc_file, hash_value, file_length))
-            else:
-                record_data.append((file_dest, hash_, length))
+                record_data.append((odest_file, hash_value, file_length))
 
     with open(record_path, "w") as record:
         csv.writer(record, lineterminator='\n').writerows(sorted(set(record_data)))

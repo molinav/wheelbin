@@ -20,9 +20,23 @@
 # SOFTWARE.
 #
 """wheelbin -- Compile all py files in a wheel to pyc files."""
+import io
+import os
 from setuptools import setup
 from setuptools import find_packages
 from src.wheelbin import __version__
+
+
+def get_content(name, splitlines=False):
+    """Return the file contents with project root as root folder."""
+
+    here = os.path.abspath(os.path.dirname(__file__))
+    path = os.path.join(here, name)
+    with io.open(path, encoding="utf-8") as fd:
+        content = fd.read()
+    if splitlines:
+        content = [row for row in content.splitlines() if row]
+    return content
 
 
 setup(
@@ -48,5 +62,6 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Topic :: Utilities",
     ],
-    keywords="pyc wheel compile"
+    keywords="pyc wheel compile",
+    install_requires=get_content("requirements.txt", splitlines=True),
 )
