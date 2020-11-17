@@ -152,7 +152,7 @@ def rewrite_record(record_path, ignore=None):
     """Rewrite the record file with pyc files instead of py files."""
 
     record_data = []
-    whl_path = os.path.abspath(os.path.join(record_path, "..", ".."))
+    whl_path = os.path.dirname(os.path.dirname(record_path))
 
     if not os.path.exists(record_path):
         return
