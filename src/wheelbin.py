@@ -1,11 +1,9 @@
 """Compile all py files in a wheel to pyc files."""
 import csv
 import shutil
-import glob
 import os
 import re
 import argparse
-import compileall
 import zipfile
 import hashlib
 import json
