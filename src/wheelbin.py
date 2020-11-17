@@ -93,6 +93,7 @@ def convert_wheel(whl_file):
                 opath = "{0}{1}".format(iname, oext)
 
                 # Compile the file.
+                print("Compiling file: {0}".format(os.path.relpath(ipath, whl_name)))
                 py_compile.compile(ipath, opath)
 
                 # Keep the file permissions in the new file.
@@ -100,10 +101,10 @@ def convert_wheel(whl_file):
                 os.chmod(opath, ipath_chmod)
 
                 if os.name != "nt" and oext == "":
-                    print("Renaming file: {0}".format(os.path.basename(ipath)))
+                    print("Renaming file: {0}".format(os.path.relpath(ipath, whl_name)))
                     os.rename(opath, iname)
                 else:
-                    print("Removing file: {0}".format(os.path.basename(ipath)))
+                    print("Removing file: {0}".format(os.path.relpath(ipath, whl_name)))
                     os.remove(ipath)
 
     # Update the record data
