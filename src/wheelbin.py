@@ -7,7 +7,8 @@ import shutil
 import os
 import re
 import argparse
-import zipfile
+from zipfile import ZipFile
+from zipfile import ZipInfo
 import hashlib
 import json
 import base64
@@ -29,15 +30,15 @@ CHUNK_SIZE = 1024
 HASH_TYPE = "sha256"
 
 
-class ZipFileWithPermissions(zipfile.ZipFile):
-    """Custom :class:`ZipFile` class handling file permissions."""
+class WheelbinZipFile(ZipFile):
+    """Custom :class:`~zipfile.ZipFile` class handling file permissions."""
 
     def _extract_member(self, member, targetpath, pwd):
 
-        if not isinstance(member, zipfile.ZipInfo):
+        if not isinstance(member, ZipInfo):
             member = self.getinfo(member)
 
-        targetpath = zipfile.ZipFile._extract_member(self, member, targetpath, pwd)
+        targetpath = ZipFile._extract_member(self, member, targetpath, pwd)
 
         attr = member.external_attr >> 16
         if attr != 0:
@@ -96,7 +97,7 @@ def convert_wheel(whl_file, ignore=None):
     shutil.rmtree(whl_name, ignore_errors=True)
 
     # Extract our zip file temporarily
-    with ZipFileWithPermissions(whl_file, "r") as whl_zip:
+    with WheelbinZipFile(whl_file, "r") as whl_zip:
         whl_zip.extractall(whl_name)
 
     # Loop over files inside the wheel package.
