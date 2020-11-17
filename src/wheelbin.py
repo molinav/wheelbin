@@ -133,7 +133,7 @@ def convert_wheel(whl_file, ignore=None):
                     os.remove(ipath)
 
     # Update the record data
-    dist_info = "%s.dist-info" % ("-".join(whl_name.split("-")[:-3]))
+    dist_info = "%s.dist-info" % ("-".join(os.path.basename(whl_name).split("-")[:-3]))
     dist_info_path = os.path.join(whl_name, dist_info)
     record_path = os.path.join(dist_info_path, "RECORD")
     rewrite_record(record_path, ignore=ignore)
@@ -229,7 +229,7 @@ def update_version(dist_info_path):
 
     # Rename dist-info directory
     new_dist_info_path = dist_info_path[:-10] + ".compiled.dist-info"
-    shutil.move(dist_info_path, new_dist_info_path)
+    os.rename(dist_info_path, new_dist_info_path)
 
 
 def rezip_whl(whl_name):
