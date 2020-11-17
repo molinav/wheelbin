@@ -3,6 +3,7 @@ import csv
 import shutil
 import glob
 import os
+import re
 import argparse
 import compileall
 import zipfile
@@ -54,6 +55,25 @@ def is_python_file(path):
         return True
 
     if "Python script, ASCII text executable" in magic.from_file(path):
+        return True
+
+    return False
+
+
+def is_python_bytecode_file(path):
+    """Return if a path is (very likely) a Python bytecode file."""
+
+    if magic is None:
+        raise ImportError("No module named magic")
+
+    if str(path).endswith(".pyc"):
+        return True
+
+    header = magic.from_file(path)
+    if re.match(r"python (2\.[6-7]|3.[0-9]) byte-compiled", header):
+        return True
+
+    if header == "data":
         return True
 
     return False
