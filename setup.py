@@ -18,13 +18,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 from setuptools import setup
-
-import wheelbin
+from setuptools import find_packages
+from src.wheelbin import __version__
 
 
 setup(
     name="wheelbin",
-    version=wheelbin.__version__,
+    version=__version__,
     author="Grant Patten",
     author_email="grant@gpatten.com",
     url="https://github.com/molinav/wheelbin",
@@ -34,6 +34,8 @@ setup(
             "wheelbin = wheelbin:main",
         ]
     },
+    package_dir={"": "src"},
+    packages=find_packages(where="src"),
     description="Compile all py files in a wheel to pyc files",
     long_description=open("README.rst").read(),
     license="MIT",
