@@ -142,7 +142,7 @@ def convert_wheel(whl_file, ignore=None):
                     os.remove(ipath)
 
     # Update the record data.
-    dist_info = "%s.dist-info" % ("-".join(os.path.basename(whl_name).split("-")[:-3]))
+    dist_info = "%s.dist-info" % os.path.basename(whl_name).rsplit("-", 3)[0]
     dist_info_path = os.path.join(whl_name, dist_info)
     record_path = os.path.join(dist_info_path, "RECORD")
     rewrite_record(record_path, ignore=ignore)
@@ -195,19 +195,19 @@ def rewrite_record(record_path, ignore=None):
                 with open(opath, "rb") as f:
                     while True:
                         data = f.read(1024)
-
                         if not data:
                             break
-
                         hash_.update(data)
                         file_length += len(data)
 
-                hash_value = base64.urlsafe_b64encode(hash_.digest()).decode().rstrip("=")
+                hash_value = base64.urlsafe_b64encode(hash_.digest())
+                hash_value = hash_value.decode().rstrip("=")
                 hash_value = "%s=%s" % (HASH_TYPE, hash_value)
                 record_data.append((odest_file, hash_value, file_length))
 
     with open(record_path, "w") as record:
-        csv.writer(record, lineterminator="\n").writerows(sorted(set(record_data)))
+        rows = sorted(set(record_data))
+        csv.writer(record, lineterminator="\n").writerows(rows)
 
 
 def update_version(dist_info_path):
