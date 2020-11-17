@@ -1,4 +1,7 @@
-"""Compile all py files in a wheel to pyc files."""
+#! /usr/bin/env python
+# -*- coding: utf8 -*-
+"""wheelbin -- Compile all py files in a wheel to pyc files."""
+
 import csv
 import shutil
 import os
