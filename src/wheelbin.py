@@ -26,6 +26,23 @@ CHUNK_SIZE = 1024
 HASH_TYPE = "sha256"
 
 
+class ZipFileWithPermissions(zipfile.ZipFile):
+    """Custom :class:`ZipFile` class handling file permissions."""
+
+    def _extract_member(self, member, targetpath, pwd):
+
+        if not isinstance(member, zipfile.ZipInfo):
+            member = self.getinfo(member)
+
+        targetpath = zipfile.ZipFile._extract_member(self, member, targetpath, pwd)
+
+        attr = member.external_attr >> 16
+        if attr != 0:
+            os.chmod(targetpath, attr)
+
+        return targetpath
+
+
 def is_python_file(path):
     """Return if a path is (very likely) a Python file."""
 
@@ -56,7 +73,7 @@ def convert_wheel(whl_file):
     shutil.rmtree(whl_name, ignore_errors=True)
 
     # Extract our zip file temporarily
-    with zipfile.ZipFile(whl_file, "r") as whl_zip:
+    with ZipFileWithPermissions(whl_file, "r") as whl_zip:
         whl_zip.extractall(whl_name)
 
     # Loop over files inside the wheel package.
@@ -77,6 +94,11 @@ def convert_wheel(whl_file):
 
                 # Compile the file.
                 py_compile.compile(ipath, opath)
+
+                # Keep the file permissions in the new file.
+                ipath_chmod = os.stat(ipath).st_mode & 0o777
+                os.chmod(opath, ipath_chmod)
+
                 if os.name != "nt" and oext == "":
                     print("Renaming file: {0}".format(os.path.basename(ipath)))
                     os.rename(opath, iname)
