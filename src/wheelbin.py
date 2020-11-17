@@ -165,7 +165,7 @@ def rewrite_record(record_path):
                         hash_.update(data)
                         file_length += len(data)
 
-                hash_value = base64.urlsafe_b64encode(hash_.digest()).rstrip('=')
+                hash_value = base64.urlsafe_b64encode(hash_.digest()).decode().rstrip("=")
                 hash_value = "%s=%s" % (HASH_TYPE, hash_value)
                 record_data.append((odest_file, hash_value, file_length))
 
