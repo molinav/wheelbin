@@ -1,10 +1,10 @@
-Compile all py files in a wheel to pyc files
-============================================
+wheelbin
+========
 
 The package version information is changed to append .compiled to the end.
 
-If you want the pyc only version of the wheel, specify the .compiled version in your
-requirements file.
+If you want the pyc only version of the wheel, specify the .compiled version
+in your requirements file.
 
 Usage
 -----
