@@ -23,7 +23,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-"""wheelbin -- Compile all py files in a wheel to pyc files."""
+"""wheelbin -- Compile all Python files inside a wheel to bytecode files."""
 import io
 import os
 from setuptools import setup
@@ -50,7 +50,7 @@ setup(**{
     "license":
         "MIT",
     "description":
-        "Compile all py files in a wheel to pyc files",
+        "Compile all Python files inside a wheel to bytecode files",
     "long_description":
         get_content("README.rst"),
     "long_description_content_type":
