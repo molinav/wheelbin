@@ -10,6 +10,7 @@ import hashlib
 import json
 import base64
 import py_compile
+import fnmatch
 try:
     from winmagic import magic
 except ImportError:
@@ -58,7 +59,7 @@ def is_python_file(path):
     return False
 
 
-def convert_wheel(whl_file):
+def convert_wheel(whl_file, ignore=None):
     """Generate a new whl with only pyc files.
 
     This whl will append .compiled to the version information.
@@ -81,6 +82,10 @@ def convert_wheel(whl_file):
         for f in files:
             ipath = os.path.join(root, f)
             if is_python_file(ipath):
+
+                if ignore is not None and fnmatch.fnmatch(ipath, ignore):
+                    print("Skipping file: {0}".format(os.path.relpath(ipath, whl_name)))
+                    continue
 
                 # Define bytecode file path.
                 iname, iext = os.path.splitext(ipath)
@@ -111,7 +116,7 @@ def convert_wheel(whl_file):
     dist_info = "%s.dist-info" % ("-".join(whl_name.split("-")[:-3]))
     dist_info_path = os.path.join(whl_name, dist_info)
     record_path = os.path.join(dist_info_path, "RECORD")
-    rewrite_record(record_path)
+    rewrite_record(record_path, ignore=ignore)
 
     # Update version to include `.compiled`
     update_version(dist_info_path)
@@ -123,7 +128,7 @@ def convert_wheel(whl_file):
     shutil.rmtree(whl_name)
 
 
-def rewrite_record(record_path):
+def rewrite_record(record_path, ignore=None):
     """Rewrite the record file with pyc files instead of py files."""
 
     record_data = []
@@ -136,7 +141,10 @@ def rewrite_record(record_path):
         for file_dest, hash_, length in csv.reader(record):
 
             ipath = os.path.join(whl_path, file_dest)
-            if os.path.exists(ipath) and not is_python_file(ipath):
+            iext = os.path.splitext(ipath)[-1]
+            if os.path.exists(ipath) and iext and not is_python_file(ipath):
+                record_data.append((file_dest, hash_, length))
+            elif ignore is not None and fnmatch.fnmatch(ipath, ignore):
                 record_data.append((file_dest, hash_, length))
             else:
 
@@ -224,9 +232,12 @@ def main(args=None):
     """Entry point for wheelbin."""
 
     parser = argparse.ArgumentParser(description='Compile all py files in a wheel')
-    parser.add_argument("whl_file", help="Path to whl to convert")
+    parser.add_argument("whl_file",
+                        help="Path to whl to convert")
+    parser.add_argument("--ignore", type=str, default=None,
+                        help="Pattern of Python files to be ignored")
     args = parser.parse_args(args)
-    convert_wheel(args.whl_file)
+    convert_wheel(args.whl_file, ignore=args.ignore)
 
 
 if __name__ == "__main__":
