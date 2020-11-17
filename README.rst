@@ -11,5 +11,5 @@ Usage
 
 .. code-block:: bash
 
-    $ pycwheel your_wheel-1.0.0-py2-none-any.whl
+    $ wheelbin your_wheel-1.0.0-py2-none-any.whl
     # Output: your_wheel-1.0.0.compiled-py2-none-any.whl

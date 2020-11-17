@@ -19,19 +19,19 @@
 # SOFTWARE.
 from setuptools import setup
 
-import pycwheel
+import wheelbin
 
 
 setup(
-    name="pycwheel",
-    version=pycwheel.__version__,
+    name="wheelbin",
+    version=wheelbin.__version__,
     author="Grant Patten",
     author_email="grant@gpatten.com",
-    url="https://github.com/grantpatten/pycwheel",
-    py_modules=["pycwheel"],
+    url="https://github.com/molinav/wheelbin",
+    py_modules=["wheelbin"],
     entry_points={
-        'console_scripts': [
-            'pycwheel = pycwheel:main',
+        "console_scripts": [
+            "wheelbin = wheelbin:main",
         ]
     },
     description="Compile all py files in a wheel to pyc files",
