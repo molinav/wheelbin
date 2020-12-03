@@ -85,8 +85,8 @@ class WheelFile(ZipArchive):
         record_path = os.path.join(distinfo_dir, "RECORD")
 
         with open(record_path, "r") as fd:
-            data = list(csv.reader(fd))
-        return data
+            value = list(csv.reader(fd))
+        return value
 
     @record.setter
     def record(self, value):
@@ -98,6 +98,5 @@ class WheelFile(ZipArchive):
         distinfo_dir = glob.glob("{0}/*.dist-info".format(self.tmpdir.name))[0]
         record_path = os.path.join(distinfo_dir, "RECORD")
 
-        data = sorted(set(value))
         with open(record_path, "w") as fd:
-            csv.writer(fd, lineterminator="\n").writerows(data)
+            csv.writer(fd, lineterminator="\n").writerows(value)
