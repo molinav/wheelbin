@@ -27,7 +27,7 @@
 import io
 import os
 from setuptools import setup
-from src.wheelbin import __version__
+from src.wheelbin.wheelbin import __version__
 
 
 def get_content(name, splitlines=False):
@@ -96,7 +96,7 @@ setup(**{
     ],
     "entry_points": {
         "console_scripts": [
-            "wheelbin = wheelbin:main",
+            "wheelbin = wheelbin.wheelbin:main",
         ]
     },
     "python_requires":
