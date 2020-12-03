@@ -3,6 +3,8 @@
 import os
 import re
 import shutil
+import base64
+import hashlib
 import py_compile
 from tempfile import NamedTemporaryFile
 try:
@@ -80,3 +82,25 @@ class PythonFile(object):
         if self.path != opath:
             os.remove(self.path)
         self.path = opath
+
+    @property
+    def filesize(self):
+        """File size."""
+
+        return os.path.getsize(self.path)
+
+    @property
+    def hash(self):
+        """File SHA256 hash value."""
+
+        blocksize = 1024
+        hash_type = "sha256"
+        hash_obj = hashlib.new(hash_type)
+        with open(self.path, "rb") as fd:
+            for block in iter(lambda: fd.read(blocksize), b""):
+                hash_obj.update(block)
+
+        hash_value = base64.urlsafe_b64encode(hash_obj.digest())
+        hash_value = hash_value.decode().rstrip("=")
+        hash_value = "{0}={1}".format(hash_obj.name, hash_value)
+        return hash_value
