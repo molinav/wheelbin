@@ -100,3 +100,35 @@ class WheelFile(ZipArchive):
 
         with open(record_path, "w") as fd:
             csv.writer(fd, lineterminator="\n").writerows(value)
+
+    @property
+    def tag(self):
+        """Package tag."""
+
+        if self.tmpdir is None:
+            raise OSError("{0} is not unpacked".format(self.filename))
+
+        distinfo_dir = glob.glob("{0}/*.dist-info".format(self.tmpdir.name))[0]
+        wheel_path = os.path.join(distinfo_dir, "WHEEL")
+
+        with open(wheel_path, "r") as fd:
+            for row in fd.readlines():
+                if row.startswith("Tag:"):
+                    value = row.strip("\n").split(":")[-1].strip()
+        return value
+
+    @tag.setter
+    def tag(self, value):
+        """Set the package tag."""
+
+        if self.tmpdir is None:
+            raise OSError("{0} is not unpacked".format(self.filename))
+
+        distinfo_dir = glob.glob("{0}/*.dist-info".format(self.tmpdir.name))[0]
+        wheel_path = os.path.join(distinfo_dir, "WHEEL")
+
+        with open(wheel_path, "r") as fd:
+            rows = [row if not row.startswith("Tag:")
+                    else "Tag: {0}\n".format(value) for row in fd.readlines()]
+        with open(wheel_path, "w") as fd:
+            fd.write("".join(rows))
