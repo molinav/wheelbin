@@ -33,6 +33,10 @@ class PythonFile(object):
         if re.match(r"Python script, ASCII text executable.*", header):
             return True
 
+        if self.path.endswith(".py"):
+            if re.match(r"empty", header) or re.match(r"ASCII text.*", header):
+                return True
+
         return False
 
     def is_pycfile(self):
