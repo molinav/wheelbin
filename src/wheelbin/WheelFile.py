@@ -117,6 +117,7 @@ class WheelFile(ZipArchive):
             for row in fd.readlines():
                 if row.startswith("Tag:"):
                     value = row.strip("\n").split(":")[-1].strip()
+                    break
         return value
 
     @tag.setter
