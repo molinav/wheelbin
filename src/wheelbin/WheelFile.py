@@ -23,11 +23,15 @@ class WheelFile(ZipArchive):
 
         if self.tmpdir is not None:
             raise OSError("{0} is already unpacked".format(self.filename))
+
         self.tmpdir = TemporaryDirectory()
         self.extractall(self.tmpdir.name)
 
     def repack(self, path=None):
         """Repack wheel contents into a wheel file again."""
+
+        if self.tmpdir is None:
+            raise OSError("{0} is not unpacked".format(self.filename))
 
         if path is None:
             path = self.filename
