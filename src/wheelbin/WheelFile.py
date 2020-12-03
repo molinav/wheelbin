@@ -5,9 +5,9 @@ import csv
 import glob
 import shutil
 import fnmatch
-from tempfile import TemporaryDirectory
 from . PythonFile import PythonFile
 from . ZipArchive import ZipArchive
+from . TemporaryDirectory import TemporaryDirectory
 
 
 class WheelFile(ZipArchive):
