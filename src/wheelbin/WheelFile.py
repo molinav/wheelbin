@@ -29,7 +29,7 @@ class WheelFile(ZipArchive):
         self.tmpdir = TemporaryDirectory()
         self.extractall(self.tmpdir.name)
 
-    def repack(self, path=None):
+    def pack(self, path=None):
         """Repack wheel contents into a wheel file again."""
 
         if self.tmpdir is None:
