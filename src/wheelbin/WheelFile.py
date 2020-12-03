@@ -1,10 +1,12 @@
 """:class:`WheelFile` class encapsulation."""
 
 import os
+import sys
 import csv
 import glob
 import shutil
 import fnmatch
+from distutils import sysconfig
 from . PythonFile import PythonFile
 from . ZipArchive import ZipArchive
 from . TemporaryDirectory import TemporaryDirectory
@@ -132,3 +134,23 @@ class WheelFile(ZipArchive):
                     else "Tag: {0}\n".format(value) for row in fd.readlines()]
         with open(wheel_path, "w") as fd:
             fd.write("".join(rows))
+
+    def get_compiled_tag(self):
+        """Return the tag for the compiled version of the wheel file."""
+
+        pyarch_orig = self.tag.split("-")[-1]
+
+        # Get ABI flags.
+        abid = ("d" if sysconfig.get_config_var("WITH_PYDEBUG") or
+                hasattr(sys, "gettotalrefcount") else "")
+        abim = ("m" if sysconfig.get_config_var("WITH_PYMALLOC") and
+                sys.version_info < (3, 8) else "")
+        abiu = ("u" if sysconfig.get_config_var("Py_UNICODE_SIZE") and
+                sys.version_info < (3, 3) else "")
+
+        # Define the three tag items for the compiled wheel.
+        pyver = "cp{0}{1}".format(*sys.version_info[:2])
+        pyabi = "{0}{1}{2}{3}".format(*[pyver, abid, abim, abiu])
+        pyarch = pyarch_orig
+
+        return "-".join([pyver, pyabi, pyarch])
