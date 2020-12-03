@@ -7,19 +7,16 @@ __version__ = "1.1.0+dev"
 __author__ = "Grant Patten <grant@gpatten.com>"
 
 import os
-import shutil
-
 import re
+import shutil
 import fnmatch
-
 import csv
 import json
 import base64
 import hashlib
-import py_compile
 import argparse
-from . ZipArchive import ZipArchive
-
+from . PythonFile import PythonFile
+from . WheelFile import WheelFile
 
 try:
     from winmagic import magic
@@ -50,25 +47,6 @@ def is_python_file(path):
     return False
 
 
-def is_python_bytecode_file(path):
-    """Return if a path is (very likely) a Python bytecode file."""
-
-    if magic is None:
-        raise ImportError("No module named magic")
-
-    if str(path).endswith(".pyc"):
-        return True
-
-    header = magic.from_file(path)
-    if re.match(r"python (2\.[6-7]|3.[0-9]) byte-compiled", header):
-        return True
-
-    if header == "data":
-        return True
-
-    return False
-
-
 def convert_wheel(whl_file, ignore=None):
     """Generate a new wheel with only bytecode files.
 
@@ -84,44 +62,28 @@ def convert_wheel(whl_file, ignore=None):
     shutil.rmtree(whl_name, ignore_errors=True)
 
     # Extract our zip file temporarily
-    with ZipArchive(whl_file, "r") as whl_zip:
+    with WheelFile(whl_file, "r") as whl_zip:
         whl_zip.extractall(whl_name)
 
     # Loop over files inside the wheel package.
     for root, _dirs, files in os.walk(whl_name):
         for f in files:
+
             ipath = os.path.join(root, f)
-            if is_python_file(ipath):
+            ipath_rel = os.path.relpath(ipath, whl_name)
+            if ignore is not None and fnmatch.fnmatch(ipath, ignore):
+                print("Skipping file: {0}".format(ipath_rel))
+                continue
 
-                ipath_rel = os.path.relpath(ipath, whl_name)
-                if ignore is not None and fnmatch.fnmatch(ipath, ignore):
-                    print("Skipping file: {0}".format(ipath_rel))
-                    continue
+            # Try to open as Python file.
+            try:
+                fileobj = PythonFile(ipath)
+            except ValueError:
+                continue
 
-                # Define bytecode file path.
-                iname, iext = os.path.splitext(ipath)
-                if iext == ".py":
-                    oext = ".pyc"
-                elif iext == "":
-                    oext = ".exe" if os.name == "nt" else ""
-                else:
-                    raise ValueError(iname, iext)
-                opath = "{0}{1}".format(iname, oext)
-
-                # Compile the file.
-                print("Compiling file: {0}".format(ipath_rel))
-                py_compile.compile(ipath, opath)
-
-                # Keep the file permissions in the new file.
-                ipath_chmod = os.stat(ipath).st_mode & 0o777
-                os.chmod(opath, ipath_chmod)
-
-                if os.name != "nt" and oext == "":
-                    print("Renaming file: {0}".format(ipath_rel))
-                    os.rename(opath, iname)
-                else:
-                    print("Removing file: {0}".format(ipath_rel))
-                    os.remove(ipath)
+            # Try to compile if it is a Python source file.
+            if fileobj.is_pyfile():
+                fileobj.compile()
 
     # Update the record data.
     dist_info = "%s.dist-info" % os.path.basename(whl_name).rsplit("-", 3)[0]
