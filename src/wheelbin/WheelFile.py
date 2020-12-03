@@ -37,6 +37,11 @@ class WheelFile(ZipArchive):
     def compile_files(self, exclude=None):
         """Compile non-excluded Python files within unpacked wheel file."""
 
+        # Read the initial record.
+        index = None
+        record = self.record
+        record_filenames = [row[0] for row in record]
+
         # Loop over the files inside the wheel package.
         for root, _dirs, filenames in os.walk(self.tmpdir.name):
 
@@ -55,9 +60,15 @@ class WheelFile(ZipArchive):
                 except ValueError:
                     continue
 
-                # Try to compile if it is a Python source file.
                 if fileobj.is_pyfile():
+                    # Compile if it is a Python source file.
                     fileobj.compile()
+                    opath = fileobj.path
+                    opath_rel = os.path.relpath(opath, self.tmpdir.name)
+                    # Update the entry in the record.
+                    index = record_filenames.index(ipath_rel)
+                    record[index] = [opath_rel, fileobj.hash, fileobj.filesize]
+                    self.record = record
 
     @property
     def record(self):
