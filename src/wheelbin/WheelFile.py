@@ -1,6 +1,8 @@
 """:class:`WheelFile` class encapsulation."""
 
 import os
+import csv
+import glob
 import shutil
 import fnmatch
 from tempfile import TemporaryDirectory
@@ -56,3 +58,31 @@ class WheelFile(ZipArchive):
                 # Try to compile if it is a Python source file.
                 if fileobj.is_pyfile():
                     fileobj.compile()
+
+    @property
+    def record(self):
+        """Wheel file record."""
+
+        if self.tmpdir is None:
+            raise OSError("{0} is not unpacked".format(self.filename))
+
+        distinfo_dir = glob.glob("{0}/*.dist-info".format(self.tmpdir.name))[0]
+        record_path = os.path.join(distinfo_dir, "RECORD")
+
+        with open(record_path, "r") as fd:
+            data = list(csv.reader(fd))
+        return data
+
+    @record.setter
+    def record(self, value):
+        """Set the wheel file record."""
+
+        if self.tmpdir is None:
+            raise OSError("{0} is not unpacked".format(self.filename))
+
+        distinfo_dir = glob.glob("{0}/*.dist-info".format(self.tmpdir.name))[0]
+        record_path = os.path.join(distinfo_dir, "RECORD")
+
+        data = sorted(set(value))
+        with open(record_path, "w") as fd:
+            csv.writer(fd, lineterminator="\n").writerows(data)
