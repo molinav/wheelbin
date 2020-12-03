@@ -17,10 +17,9 @@ import json
 import base64
 import hashlib
 import py_compile
-from zipfile import ZipFile
-from zipfile import ZipInfo
-
 import argparse
+from . ZipArchive import ZipArchive
+
 
 try:
     from winmagic import magic
@@ -33,23 +32,6 @@ except ImportError:
 
 CHUNK_SIZE = 1024
 HASH_TYPE = "sha256"
-
-
-class WheelbinZipFile(ZipFile):
-    """Custom :class:`~zipfile.ZipFile` class handling file permissions."""
-
-    def _extract_member(self, member, targetpath, pwd):
-
-        if not isinstance(member, ZipInfo):
-            member = self.getinfo(member)
-
-        targetpath = ZipFile._extract_member(self, member, targetpath, pwd)
-
-        attr = member.external_attr >> 16
-        if attr != 0:
-            os.chmod(targetpath, attr)
-
-        return targetpath
 
 
 def is_python_file(path):
@@ -102,7 +84,7 @@ def convert_wheel(whl_file, ignore=None):
     shutil.rmtree(whl_name, ignore_errors=True)
 
     # Extract our zip file temporarily
-    with WheelbinZipFile(whl_file, "r") as whl_zip:
+    with ZipArchive(whl_file, "r") as whl_zip:
         whl_zip.extractall(whl_name)
 
     # Loop over files inside the wheel package.
