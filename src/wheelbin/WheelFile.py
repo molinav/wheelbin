@@ -54,7 +54,7 @@ class WheelFile(ZipArchive):
         self.extractall(self.tmpdir.name)
 
     def pack(self, path=None):
-        """Repack wheel contents into a wheel file again."""
+        """Pack wheel contents into a wheel file again."""
 
         if self.tmpdir is None:
             raise OSError("{0} is not unpacked".format(self.filename))
@@ -81,24 +81,29 @@ class WheelFile(ZipArchive):
                 ipath_rel = os.path.relpath(ipath, self.tmpdir.name)
 
                 if exclude is not None and fnmatch.fnmatch(ipath_rel, exclude):
-                    print("Skipping file: {0}".format(ipath_rel))
+                    print("Skipping: {0} (excluded)".format(ipath_rel))
                     continue
 
                 # Try to open as Python file.
                 try:
                     fileobj = PythonFile(ipath)
                 except ValueError:
+                    print("Skipping: {0} (non-Python file)".format(ipath_rel))
                     continue
 
-                if fileobj.is_pyfile():
-                    # Compile if it is a Python source file.
-                    fileobj.compile()
-                    opath = fileobj.path
-                    opath_rel = os.path.relpath(opath, self.tmpdir.name)
-                    # Update the entry in the record.
-                    index = record_filenames.index(ipath_rel)
-                    record[index] = [opath_rel, fileobj.hash, fileobj.filesize]
-                    self.record = record
+                if not fileobj.is_pyfile():
+                    print("Skipping: {0} (non-Python file)".format(ipath_rel))
+                    continue
+
+                # Compile if it is a Python source file.
+                print("Compiling: {0}".format(ipath_rel))
+                fileobj.compile()
+                opath = fileobj.path
+                opath_rel = os.path.relpath(opath, self.tmpdir.name)
+                # Update the entry in the record.
+                index = record_filenames.index(ipath_rel)
+                record[index] = [opath_rel, fileobj.hash, fileobj.filesize]
+                self.record = record
 
     @property
     def record(self):
