@@ -30,11 +30,8 @@ from . import __version__
 from . WheelFile import WheelFile
 
 
-def convert_wheel(whl_file, ignore=None):
-    """Generate a new wheel with only bytecode files.
-
-    This wheel will append '.compiled' to the version information.
-    """
+def convert_wheel(whl_file, ignore=None, verbose=True):
+    """Generate a new wheel with only bytecode files."""
 
     whl_fold = os.path.dirname(whl_file)
     file_ext = os.path.splitext(whl_file)[-1]
@@ -44,7 +41,7 @@ def convert_wheel(whl_file, ignore=None):
     with WheelFile(whl_file, "r") as whl_zip:
         # Unpack to temporary directory and compile.
         whl_zip.unpack()
-        whl_zip.compile_files(exclude=ignore)
+        whl_zip.compile_files(exclude=ignore, verbose=verbose)
         # Pack again with the appropriate compiled wheel filename.
         compiled_whlname = whl_zip.get_compiled_wheelname()
         whl_zip.pack(os.path.join(whl_fold, compiled_whlname))
@@ -61,10 +58,13 @@ def main(args=None):
         "--ignore", type=str, default=None,
         help="pattern for files that skip compilation")
     parser.add_argument(
+        "-q", "--quiet", action="store_true", default=False,
+        help="call the script without printing messages")
+    parser.add_argument(
         "-v", "--version", action="version",
         version="%(prog)s {0}".format(__version__))
     args = parser.parse_args(args)
-    convert_wheel(args.whl_file, ignore=args.ignore)
+    convert_wheel(args.whl_file, ignore=args.ignore, verbose=not args.quiet)
 
 
 if __name__ == "__main__":
