@@ -136,6 +136,40 @@ class WheelFile(ZipArchive):
         with open(wheel_path, "w") as fd:
             fd.write("".join(rows))
 
+    @property
+    def pkgname(self):
+        """Package name."""
+
+        if self.tmpdir is None:
+            raise OSError("{0} is not unpacked".format(self.filename))
+
+        distinfo_dir = glob.glob("{0}/*.dist-info".format(self.tmpdir.name))[0]
+        wheel_path = os.path.join(distinfo_dir, "METADATA")
+
+        with open(wheel_path, "r") as fd:
+            for row in fd.readlines():
+                if row.startswith("Name:"):
+                    value = row.strip("\n").split(":")[-1].strip()
+                    break
+        return value
+
+    @property
+    def pkgversion(self):
+        """Package version."""
+
+        if self.tmpdir is None:
+            raise OSError("{0} is not unpacked".format(self.filename))
+
+        distinfo_dir = glob.glob("{0}/*.dist-info".format(self.tmpdir.name))[0]
+        wheel_path = os.path.join(distinfo_dir, "METADATA")
+
+        with open(wheel_path, "r") as fd:
+            for row in fd.readlines():
+                if row.startswith("Version:"):
+                    value = row.strip("\n").split(":")[-1].strip()
+                    break
+        return value
+
     def get_compiled_tag(self):
         """Return the tag for the compiled version of the wheel file."""
 
