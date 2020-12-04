@@ -28,7 +28,7 @@ import io
 import os
 from setuptools import setup
 from setuptools import find_packages
-from src.wheelbin.wheelbin import __version__
+from src.wheelbin import __version__
 
 
 def get_content(name, splitlines=False):
@@ -96,7 +96,7 @@ setup(**{
         find_packages(where="src"),
     "entry_points": {
         "console_scripts": [
-            "wheelbin = wheelbin.wheelbin:main",
+            "wheelbin = wheelbin.cli:main",
         ]
     },
     "python_requires":
