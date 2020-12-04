@@ -31,6 +31,7 @@ import csv
 import glob
 import shutil
 import fnmatch
+import distutils.util
 from distutils import sysconfig
 from . PythonFile import PythonFile
 from . ZipArchive import ZipArchive
@@ -215,8 +216,6 @@ class WheelFile(ZipArchive):
     def get_compiled_tag(self):
         """Return the tag for the compiled version of the wheel file."""
 
-        pyarch_orig = self.tag.split("-")[-1]
-
         # Get ABI flags.
         abid = ("d" if sysconfig.get_config_var("WITH_PYDEBUG") or
                 hasattr(sys, "gettotalrefcount") else "")
@@ -228,9 +227,19 @@ class WheelFile(ZipArchive):
         # Define the three tag items for the compiled wheel.
         pyver = "cp{0}{1}".format(*sys.version_info[:2])
         pyabi = "{0}{1}{2}{3}".format(*[pyver, abid, abim, abiu])
-        pyarch = pyarch_orig
+        pyarch = self.get_compiled_arch()
 
         return "-".join([pyver, pyabi, pyarch])
+
+    def get_compiled_arch(self):  # pylint: disable=no-self-use
+        """Return the platform name."""
+
+        value = distutils.util.get_platform().replace("-", "_")
+        if value.startswith("macosx"):
+            raise NotImplementedError
+        if value == "linux_x86_64" and sys.maxsize == 2147483647:
+            value = "linux_i686"
+        return value
 
     def get_compiled_wheelname(self):
         """Return the canonical name for the compiled wheel file."""
