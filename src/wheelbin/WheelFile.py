@@ -23,6 +23,7 @@
 # SOFTWARE.
 #
 """:class:`WheelFile` class encapsulation."""
+from __future__ import print_function
 
 import os
 import sys
@@ -64,8 +65,10 @@ class WheelFile(ZipArchive):
         shutil.make_archive(self.tmpdir.name, "zip", self.tmpdir.name)
         shutil.move("{0}.zip".format(self.tmpdir.name), path)
 
-    def compile_files(self, exclude=None):
+    def compile_files(self, exclude=None, verbose=False):
         """Compile non-excluded Python files within unpacked wheel file."""
+
+        log = print if verbose else (lambda *args, **kwargs: None)
 
         # Read the initial record.
         index = None
@@ -81,22 +84,22 @@ class WheelFile(ZipArchive):
                 ipath_rel = os.path.relpath(ipath, self.tmpdir.name)
 
                 if exclude is not None and fnmatch.fnmatch(ipath_rel, exclude):
-                    print("Skipping: {0} (excluded)".format(ipath_rel))
+                    log("Skipping: {0} (excluded)".format(ipath_rel))
                     continue
 
                 # Try to open as Python file.
                 try:
                     fileobj = PythonFile(ipath)
                 except ValueError:
-                    print("Skipping: {0} (non-Python file)".format(ipath_rel))
+                    log("Skipping: {0} (non-Python file)".format(ipath_rel))
                     continue
 
                 if not fileobj.is_pyfile():
-                    print("Skipping: {0} (non-Python file)".format(ipath_rel))
+                    log("Skipping: {0} (non-Python file)".format(ipath_rel))
                     continue
 
                 # Compile if it is a Python source file.
-                print("Compiling: {0}".format(ipath_rel))
+                log("Compiling: {0}".format(ipath_rel))
                 fileobj.compile()
                 opath = fileobj.path
                 opath_rel = os.path.relpath(opath, self.tmpdir.name)
