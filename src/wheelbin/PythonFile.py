@@ -56,7 +56,7 @@ class PythonFile(object):
             raise ImportError("No module named magic")
 
         header = magic.from_file(self.path)
-        if re.match(r"Python script, ASCII text executable.*", header):
+        if re.match(r"Python script.*", header):
             return True
 
         if self.path.endswith(".py"):
