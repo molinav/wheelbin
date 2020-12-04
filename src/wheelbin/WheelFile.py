@@ -170,6 +170,13 @@ class WheelFile(ZipArchive):
                     break
         return value
 
+    @property
+    def wheelname(self):
+        """Canonical name for the wheel file."""
+
+        return "{0}-{1}-{2}.whl".format(self.pkgname, self.pkgversion,
+                                        self.tag)
+
     def get_compiled_tag(self):
         """Return the tag for the compiled version of the wheel file."""
 
