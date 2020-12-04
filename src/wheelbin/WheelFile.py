@@ -189,3 +189,9 @@ class WheelFile(ZipArchive):
         pyarch = pyarch_orig
 
         return "-".join([pyver, pyabi, pyarch])
+
+    def get_compiled_wheelname(self):
+        """Return the canonical name for the compiled wheel file."""
+
+        return "{0}-{1}-{2}.bin.whl".format(self.pkgname, self.pkgversion,
+                                            self.get_compiled_tag())
