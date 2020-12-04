@@ -38,13 +38,16 @@ def convert_wheel(whl_file, exclude=None, verbose=True):
     if file_ext != ".whl":
         raise TypeError("File to convert must be a *.whl")
 
-    with WheelFile(whl_file, "r") as whl_zip:
+    with WheelFile(whl_file, "r") as whlfd:
         # Unpack to temporary directory and compile.
-        whl_zip.unpack()
-        whl_zip.compile_files(exclude=exclude, verbose=verbose)
+        whlfd.unpack()
+        whlfd.compile_files(exclude=exclude, verbose=verbose)
         # Pack again with the appropriate compiled wheel filename.
-        compiled_whlname = whl_zip.get_compiled_wheelname()
-        whl_zip.pack(os.path.join(whl_fold, compiled_whlname))
+        compiled_whlname = whlfd.get_compiled_wheelname()
+        compiled_whlpath = os.path.join(whl_fold, compiled_whlname)
+        if verbose:
+            print("Saving: {0}".format(compiled_whlpath))
+        whlfd.pack(compiled_whlpath)
 
 
 def main(args=None):
