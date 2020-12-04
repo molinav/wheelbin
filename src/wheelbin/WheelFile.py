@@ -108,6 +108,9 @@ class WheelFile(ZipArchive):
                 record[index] = [opath_rel, fileobj.hash, fileobj.filesize]
                 self.record = record
 
+        # Update the wheel tag inside the dist-info.
+        self.tag = self.get_compiled_tag()
+
     @property
     def record(self):
         """Wheel file record."""
