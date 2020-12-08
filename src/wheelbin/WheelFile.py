@@ -186,9 +186,9 @@ class WheelFile(ZipArchive):
             raise OSError("{0} is not unpacked".format(self.filename))
 
         distinfo_dir = glob.glob("{0}/*.dist-info".format(self.tmpdir.name))[0]
-        wheel_path = os.path.join(distinfo_dir, "METADATA")
+        metadata_path = os.path.join(distinfo_dir, "METADATA")
 
-        with open(wheel_path, "r", encoding="utf-8") as fd:
+        with open(metadata_path, "r", encoding="utf-8") as fd:
             for row in fd.readlines():
                 if row.startswith("Name:"):
                     value = row.strip("\n").split(":")[-1].strip()
@@ -203,9 +203,9 @@ class WheelFile(ZipArchive):
             raise OSError("{0} is not unpacked".format(self.filename))
 
         distinfo_dir = glob.glob("{0}/*.dist-info".format(self.tmpdir.name))[0]
-        wheel_path = os.path.join(distinfo_dir, "METADATA")
+        metadata_path = os.path.join(distinfo_dir, "METADATA")
 
-        with open(wheel_path, "r", encoding="utf-8") as fd:
+        with open(metadata_path, "r", encoding="utf-8") as fd:
             for row in fd.readlines():
                 if row.startswith("Version:"):
                     value = row.strip("\n").split(":")[-1].strip()
