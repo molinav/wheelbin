@@ -105,7 +105,7 @@ setup(**{
             ">=2.6",
             "!=3.0.*",
             "!=3.1.*",
-            "<4",
+            "<4.0",
         ]),
     "install_requires":
         get_content("requirements.txt", splitlines=True),
