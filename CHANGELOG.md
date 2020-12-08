@@ -10,6 +10,7 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Fix missing classifier for Python 2.6.
 - Fix encoding issue when reading/writing the files inside the wheel
   `dist-info` folder.
+- Fix access to `wheelbin` with module syntax, i.e. `python -m wheelbin`.
 
 ## [1.2.0] - 2020-12-08
 

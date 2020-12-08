@@ -97,7 +97,7 @@ setup(**{
         find_packages(where="src"),
     "entry_points": {
         "console_scripts": [
-            "wheelbin = wheelbin.cli:main",
+            "wheelbin = wheelbin.__main__:main",
         ]
     },
     "python_requires":
