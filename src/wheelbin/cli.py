@@ -48,6 +48,7 @@ def convert_wheel(whl_file, exclude=None, verbose=True):
         if verbose:
             print("Saving: {0}".format(compiled_whlpath))
         whlfd.pack(compiled_whlpath)
+        whlfd.cleanup()
 
 
 def main(args=None):
