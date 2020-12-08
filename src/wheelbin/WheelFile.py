@@ -66,6 +66,12 @@ class WheelFile(ZipArchive):
         shutil.make_archive(self.tmpdir.name, "zip", self.tmpdir.name)
         shutil.move("{0}.zip".format(self.tmpdir.name), path)
 
+    def cleanup(self):
+        """Clean the temporary unpacking directory."""
+
+        self.tmpdir.cleanup()
+        self.tmpdir = None
+
     def compile_files(self, exclude=None, verbose=False):
         """Compile non-excluded Python files within unpacked wheel file."""
 
