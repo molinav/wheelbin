@@ -1,22 +1,27 @@
 wheelbin
 ========
 
-`wheelbin` receives a wheel file and returns its compiled version, i.e. an
-equivalent wheel file with the Python files substituted with their
-corresponding Python bytecode files.
+``wheelbin`` receives a wheel file and returns its compiled version,
+i.e. an equivalent wheel file with the Python files substituted with
+their corresponding Python bytecode files.
 
 The output wheel filename reflects this compilation by fixing the Python
-implementation, ABI and target architecture, and it replaces the `.whl`
-extension with `.bin.whl`.
+implementation, ABI and target architecture, and it replaces the
+``.whl`` extension with ``.bin.whl``.
 
 Additionally, Python files can be excluded from compilation by passing a
-wildcard expression to the `--exclude` option.
+wildcard expression to the ``--exclude`` option.
+
+``wheelbin`` is a package forked from the original `pycwheel`_ by
+Grant Patten.
+
+.. _pycwheel: https://github.com/grantpatten/pycwheel
 
 Usage
 -----
 
-For example, given a wheel file `your_wheel-1.0.0-py3-none-any.whl` and
-`wheelbin` installed on a GNU/Linux distribution under Python 3.7:
+For example, given a wheel file ``your_wheel-1.0.0-py3-none-any.whl``
+and ``wheelbin`` installed on a GNU/Linux distribution under Python 3.7:
 
 .. code-block:: bash
 
