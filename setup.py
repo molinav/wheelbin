@@ -53,9 +53,9 @@ setup(**{
     "description":
         "Compile all Python files inside a wheel to bytecode files",
     "long_description":
-        get_content("README.rst"),
+        get_content("README.md"),
     "long_description_content_type":
-        "text/x-rst",
+        "text/markdown",
     "url":
         "https://github.com/molinav/wheelbin",
     "author":
