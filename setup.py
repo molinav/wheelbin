@@ -27,6 +27,7 @@
 import io
 import os
 from setuptools import setup
+from setuptools import find_packages
 from src.wheelbin import __version__
 
 
@@ -91,12 +92,11 @@ setup(**{
     ],
     "package_dir":
         {"": "src"},
-    "py_modules": [
-        "wheelbin",
-    ],
+    "packages":
+        find_packages(where="src"),
     "entry_points": {
         "console_scripts": [
-            "wheelbin = wheelbin:main",
+            "wheelbin = wheelbin.cli:main",
         ]
     },
     "python_requires":
