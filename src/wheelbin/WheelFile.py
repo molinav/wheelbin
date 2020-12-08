@@ -28,7 +28,6 @@ from __future__ import print_function
 import io
 import os
 import sys
-import csv
 import glob
 import shutil
 import fnmatch
@@ -113,7 +112,7 @@ class WheelFile(ZipArchive):
                 opath_rel = os.path.relpath(opath, self.tmpdir.name)
                 # Update the entry in the record.
                 index = record_filenames.index(ipath_rel)
-                record[index] = [opath_rel, fileobj.hash, fileobj.filesize]
+                record[index] = [opath_rel, fileobj.hash, str(fileobj.filesize)]
                 self.record = record
 
         # Update the wheel tag inside the dist-info.
@@ -130,7 +129,7 @@ class WheelFile(ZipArchive):
         record_path = os.path.join(distinfo_dir, "RECORD")
 
         with io.open(record_path, "r", encoding="utf-8") as fd:
-            value = list(csv.reader(fd))
+            value = [row.strip("\r\n").split(",") for row in fd.readlines()]
         return value
 
     @record.setter
@@ -144,7 +143,7 @@ class WheelFile(ZipArchive):
         record_path = os.path.join(distinfo_dir, "RECORD")
 
         with io.open(record_path, "w", encoding="utf-8") as fd:
-            csv.writer(fd, lineterminator="\n").writerows(value)
+            fd.write("\n".join([",".join(row) for row in value]))
 
     @property
     def tag(self):
@@ -169,6 +168,8 @@ class WheelFile(ZipArchive):
 
         if self.tmpdir is None:
             raise OSError("{0} is not unpacked".format(self.filename))
+        if isinstance(value, bytes):
+            value = value = value.decode("utf-8")
 
         distinfo_dir = glob.glob("{0}/*.dist-info".format(self.tmpdir.name))[0]
         wheel_path = os.path.join(distinfo_dir, "WHEEL")
