@@ -25,6 +25,7 @@
 """:class:`WheelFile` class encapsulation."""
 from __future__ import print_function
 
+import io
 import os
 import sys
 import csv
@@ -128,7 +129,7 @@ class WheelFile(ZipArchive):
         distinfo_dir = glob.glob("{0}/*.dist-info".format(self.tmpdir.name))[0]
         record_path = os.path.join(distinfo_dir, "RECORD")
 
-        with open(record_path, "r", encoding="utf-8") as fd:
+        with io.open(record_path, "r", encoding="utf-8") as fd:
             value = list(csv.reader(fd))
         return value
 
@@ -142,7 +143,7 @@ class WheelFile(ZipArchive):
         distinfo_dir = glob.glob("{0}/*.dist-info".format(self.tmpdir.name))[0]
         record_path = os.path.join(distinfo_dir, "RECORD")
 
-        with open(record_path, "w", encoding="utf-8") as fd:
+        with io.open(record_path, "w", encoding="utf-8") as fd:
             csv.writer(fd, lineterminator="\n").writerows(value)
 
     @property
@@ -155,7 +156,7 @@ class WheelFile(ZipArchive):
         distinfo_dir = glob.glob("{0}/*.dist-info".format(self.tmpdir.name))[0]
         wheel_path = os.path.join(distinfo_dir, "WHEEL")
 
-        with open(wheel_path, "r", encoding="utf-8") as fd:
+        with io.open(wheel_path, "r", encoding="utf-8") as fd:
             for row in fd.readlines():
                 if row.startswith("Tag:"):
                     value = row.strip("\n").split(":")[-1].strip()
@@ -172,10 +173,10 @@ class WheelFile(ZipArchive):
         distinfo_dir = glob.glob("{0}/*.dist-info".format(self.tmpdir.name))[0]
         wheel_path = os.path.join(distinfo_dir, "WHEEL")
 
-        with open(wheel_path, "r", encoding="utf-8") as fd:
+        with io.open(wheel_path, "r", encoding="utf-8") as fd:
             rows = [row if not row.startswith("Tag:")
                     else "Tag: {0}\n".format(value) for row in fd.readlines()]
-        with open(wheel_path, "w", encoding="utf-8") as fd:
+        with io.open(wheel_path, "w", encoding="utf-8") as fd:
             fd.write("".join(rows))
 
     @property
@@ -188,7 +189,7 @@ class WheelFile(ZipArchive):
         distinfo_dir = glob.glob("{0}/*.dist-info".format(self.tmpdir.name))[0]
         metadata_path = os.path.join(distinfo_dir, "METADATA")
 
-        with open(metadata_path, "r", encoding="utf-8") as fd:
+        with io.open(metadata_path, "r", encoding="utf-8") as fd:
             for row in fd.readlines():
                 if row.startswith("Name:"):
                     value = row.strip("\n").split(":")[-1].strip()
@@ -205,7 +206,7 @@ class WheelFile(ZipArchive):
         distinfo_dir = glob.glob("{0}/*.dist-info".format(self.tmpdir.name))[0]
         metadata_path = os.path.join(distinfo_dir, "METADATA")
 
-        with open(metadata_path, "r", encoding="utf-8") as fd:
+        with io.open(metadata_path, "r", encoding="utf-8") as fd:
             for row in fd.readlines():
                 if row.startswith("Version:"):
                     value = row.strip("\n").split(":")[-1].strip()
