@@ -25,9 +25,9 @@
 """:class:`WheelFile` class encapsulation."""
 from __future__ import print_function
 
+import io
 import os
 import sys
-import csv
 import glob
 import shutil
 import fnmatch
@@ -112,7 +112,7 @@ class WheelFile(ZipArchive):
                 opath_rel = os.path.relpath(opath, self.tmpdir.name)
                 # Update the entry in the record.
                 index = record_filenames.index(ipath_rel)
-                record[index] = [opath_rel, fileobj.hash, fileobj.filesize]
+                record[index] = [opath_rel, fileobj.hash, str(fileobj.filesize)]
                 self.record = record
 
         # Update the wheel tag inside the dist-info.
@@ -128,8 +128,8 @@ class WheelFile(ZipArchive):
         distinfo_dir = glob.glob("{0}/*.dist-info".format(self.tmpdir.name))[0]
         record_path = os.path.join(distinfo_dir, "RECORD")
 
-        with open(record_path, "r", encoding="utf-8") as fd:
-            value = list(csv.reader(fd))
+        with io.open(record_path, "r", encoding="utf-8") as fd:
+            value = [row.strip("\r\n").split(",") for row in fd.readlines()]
         return value
 
     @record.setter
@@ -142,8 +142,8 @@ class WheelFile(ZipArchive):
         distinfo_dir = glob.glob("{0}/*.dist-info".format(self.tmpdir.name))[0]
         record_path = os.path.join(distinfo_dir, "RECORD")
 
-        with open(record_path, "w", encoding="utf-8") as fd:
-            csv.writer(fd, lineterminator="\n").writerows(value)
+        with io.open(record_path, "w", encoding="utf-8") as fd:
+            fd.write("\n".join([",".join(row) for row in value]))
 
     @property
     def tag(self):
@@ -155,7 +155,7 @@ class WheelFile(ZipArchive):
         distinfo_dir = glob.glob("{0}/*.dist-info".format(self.tmpdir.name))[0]
         wheel_path = os.path.join(distinfo_dir, "WHEEL")
 
-        with open(wheel_path, "r", encoding="utf-8") as fd:
+        with io.open(wheel_path, "r", encoding="utf-8") as fd:
             for row in fd.readlines():
                 if row.startswith("Tag:"):
                     value = row.strip("\n").split(":")[-1].strip()
@@ -168,14 +168,16 @@ class WheelFile(ZipArchive):
 
         if self.tmpdir is None:
             raise OSError("{0} is not unpacked".format(self.filename))
+        if isinstance(value, bytes):
+            value = value = value.decode("utf-8")
 
         distinfo_dir = glob.glob("{0}/*.dist-info".format(self.tmpdir.name))[0]
         wheel_path = os.path.join(distinfo_dir, "WHEEL")
 
-        with open(wheel_path, "r", encoding="utf-8") as fd:
+        with io.open(wheel_path, "r", encoding="utf-8") as fd:
             rows = [row if not row.startswith("Tag:")
                     else "Tag: {0}\n".format(value) for row in fd.readlines()]
-        with open(wheel_path, "w", encoding="utf-8") as fd:
+        with io.open(wheel_path, "w", encoding="utf-8") as fd:
             fd.write("".join(rows))
 
     @property
@@ -186,9 +188,9 @@ class WheelFile(ZipArchive):
             raise OSError("{0} is not unpacked".format(self.filename))
 
         distinfo_dir = glob.glob("{0}/*.dist-info".format(self.tmpdir.name))[0]
-        wheel_path = os.path.join(distinfo_dir, "METADATA")
+        metadata_path = os.path.join(distinfo_dir, "METADATA")
 
-        with open(wheel_path, "r", encoding="utf-8") as fd:
+        with io.open(metadata_path, "r", encoding="utf-8") as fd:
             for row in fd.readlines():
                 if row.startswith("Name:"):
                     value = row.strip("\n").split(":")[-1].strip()
@@ -203,9 +205,9 @@ class WheelFile(ZipArchive):
             raise OSError("{0} is not unpacked".format(self.filename))
 
         distinfo_dir = glob.glob("{0}/*.dist-info".format(self.tmpdir.name))[0]
-        wheel_path = os.path.join(distinfo_dir, "METADATA")
+        metadata_path = os.path.join(distinfo_dir, "METADATA")
 
-        with open(wheel_path, "r", encoding="utf-8") as fd:
+        with io.open(metadata_path, "r", encoding="utf-8") as fd:
             for row in fd.readlines():
                 if row.startswith("Version:"):
                     value = row.strip("\n").split(":")[-1].strip()
