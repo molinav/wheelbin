@@ -25,6 +25,7 @@
 """wheelbin-cli -- Compile all Python files inside a wheel to bytecode files."""
 
 import os
+import sys
 import argparse
 from . import __version__
 from . WheelFile import WheelFile
@@ -51,10 +52,21 @@ def convert_wheel(whl_file, exclude=None, verbose=True):
         whlfd.cleanup()
 
 
+def progname():
+    """Return program name."""
+
+    execname = os.path.basename(sys.argv[0])
+    if execname == os.path.basename(__file__):
+        from . import __name__ as pkgname
+        pyname = os.path.basename(sys.executable)
+        return "{0} -m {1}".format(pyname, pkgname)
+    return None
+
+
 def main(args=None):
     """Entry point for wheelbin."""
 
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(prog=progname(), description=__doc__)
     parser.add_argument(
         "whl_file",
         help="path to wheel being converted")

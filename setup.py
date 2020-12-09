@@ -53,9 +53,9 @@ setup(**{
     "description":
         "Compile all Python files inside a wheel to bytecode files",
     "long_description":
-        get_content("README.rst"),
+        get_content("README.md"),
     "long_description_content_type":
-        "text/x-rst",
+        "text/markdown",
     "url":
         "https://github.com/molinav/wheelbin",
     "author":
@@ -73,6 +73,7 @@ setup(**{
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 2",
+        "Programming Language :: Python :: 2.6",
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.2",
@@ -96,7 +97,7 @@ setup(**{
         find_packages(where="src"),
     "entry_points": {
         "console_scripts": [
-            "wheelbin = wheelbin.cli:main",
+            "wheelbin = wheelbin.__main__:main",
         ]
     },
     "python_requires":
@@ -104,7 +105,7 @@ setup(**{
             ">=2.6",
             "!=3.0.*",
             "!=3.1.*",
-            "<4",
+            "<4.0",
         ]),
     "install_requires":
         get_content("requirements.txt", splitlines=True),
