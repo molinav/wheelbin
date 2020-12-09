@@ -24,5 +24,5 @@
 #
 """wheelbin -- Compile all Python files inside a wheel to bytecode files."""
 
-__version__ = "1.3.0"
+__version__ = "1.3.0+dev"
 __author__ = "Grant Patten <grant@gpatten.com>"
