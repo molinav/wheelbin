@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-# -*- coding: utf8 -*-
+# -*- coding: utf-8 -*-
 #
 # Copyright (c) 2016 Grant Patten
 # Copyright (c) 2020-2022 Víctor Molina García
