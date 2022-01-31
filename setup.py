@@ -84,6 +84,7 @@ setup(**{
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "Topic :: Utilities",
     ],
     "keywords": [
@@ -105,7 +106,7 @@ setup(**{
             ">=2.6",
             "!=3.0.*",
             "!=3.1.*",
-            "<4.0",
+            "<3.11",
         ]),
     "install_requires":
         get_content("requirements.txt", splitlines=True),

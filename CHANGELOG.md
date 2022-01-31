@@ -6,6 +6,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+- Support for Python 3.10.
+
 ### Changed
 - Split lint and test requirements into two separate files.
 - Upgrade lint and test requirements where possible.
