@@ -8,6 +8,7 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 - Split lint and test requirements into two separate files.
+- Upgrade lint and test requirements where possible.
 
 ### Fixed
 - Fix setup encoding comment to deal with corner case under PowerShell.
