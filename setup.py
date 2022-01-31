@@ -2,8 +2,8 @@
 # -*- coding: utf8 -*-
 # flake8: noqa: E122
 #
-# Copyright (C) 2016 Grant Patten
-# Copyright (C) 2020 Víctor Molina García
+# Copyright (c) 2016 Grant Patten
+# Copyright (c) 2020 Víctor Molina García
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
