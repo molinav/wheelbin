@@ -110,7 +110,9 @@ setup(**{
     "install_requires":
         get_content("requirements.txt", splitlines=True),
     "extras_require": {
-        "dev":
-            get_content("requirements-dev.txt", splitlines=True),
+        "lint":
+            get_content("requirements-lint.txt", splitlines=True),
+        "test":
+            get_content("requirements-test.txt", splitlines=True),
     },
 })
