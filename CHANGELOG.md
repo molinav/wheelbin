@@ -15,6 +15,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 - Fix setup encoding comment to deal with corner case under PowerShell.
+- Fix missing requirement files in source distribution that were making
+  the `setup.py` unusable.
 
 ## [1.3.0] - 2020-12-09
 

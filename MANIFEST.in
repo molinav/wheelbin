@@ -1,0 +1,6 @@
+include CHANGELOG.md
+include .pylintrc
+include requirements*.txt
+recursive-exclude **/__pycache__ *
+exclude **/*.pyc
+exclude **/.gitkeep
