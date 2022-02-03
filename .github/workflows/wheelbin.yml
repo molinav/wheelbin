@@ -2,6 +2,7 @@ name: wheelbin
 
 on:
   push:
+  pull_request:
   workflow_dispatch:
 
 jobs:
@@ -15,7 +16,7 @@ jobs:
           ]
       max-parallel: 1
     runs-on: ubuntu-latest
-    container: "pylegacy/python:${{ matrix.python-version }}-debian-4"
+    container: "pylegacy/python:${{ matrix.python-version }}-debian-5"
     steps:
       -
         name: Checkout
@@ -106,8 +107,8 @@ jobs:
           TWINE_REPOSITORY_URL: "${{ secrets.PYPI_REPOSITORY_URL }}"
         run: |
           python -m twine check                                               \
-              dist/*.tar.gz                                                   \
+              dist/*.zip                                                      \
               dist/*.whl
           python -m twine upload --skip-existing                              \
-              dist/*.tar.gz                                                   \
+              dist/*.zip                                                      \
               dist/*.whl
