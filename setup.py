@@ -143,4 +143,10 @@ setup(**{
         "test":
             get_content("requirements-test.txt", splitlines=True),
     },
+    "project_urls": {
+        "Bug Tracker":
+            "https://github.com/molinav/wheelbin/issues",
+        "Source":
+            "https://github.com/molinav/wheelbin",
+    },
 })
