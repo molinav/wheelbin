@@ -26,9 +26,9 @@
 """wheelbin -- Compile all Python files inside a wheel to bytecode files."""
 import io
 import os
+import re
 from setuptools import setup
 from setuptools import find_packages
-from src.wheelbin import __version__
 
 
 def get_content(name, splitlines=False):
@@ -43,11 +43,21 @@ def get_content(name, splitlines=False):
     return content
 
 
+def get_version(pkgname):
+    """Return package version without importing the file."""
+
+    here = os.path.abspath(os.path.dirname(__file__))
+    path = os.path.join(here, "src", pkgname, "__init__.py")
+    with io.open(path, encoding="utf-8") as fd:
+        pattern = r"""\n__version__[ ]*=[ ]*["']([^"]+)["']"""
+        return re.search(pattern, fd.read()).group(1)
+
+
 setup(**{
     "name":
         "wheelbin",
     "version":
-        __version__,
+        get_version("wheelbin"),
     "license":
         "MIT",
     "description":
