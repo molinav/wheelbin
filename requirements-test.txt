@@ -1,4 +1,4 @@
-unittest2
+unittest2; python_version <= "3.9"
 
 typing >= 3.5, < 3.11; python_version == "3.4"
 pytest >= 3.2, < 3.3; python_version == "2.6"
