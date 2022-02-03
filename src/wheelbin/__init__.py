@@ -24,4 +24,4 @@
 #
 """wheelbin -- Compile all Python files inside a wheel to bytecode files."""
 
-__version__ = "1.4.0"
+__version__ = "1.4.0+dev"
