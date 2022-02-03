@@ -1,9 +1,9 @@
 #! /usr/bin/env python
-# -*- coding: utf8 -*-
+# -*- coding: utf-8 -*-
 # flake8: noqa: E122
 #
-# Copyright (C) 2016 Grant Patten
-# Copyright (C) 2020 Víctor Molina García
+# Copyright (c) 2016 Grant Patten
+# Copyright (c) 2020 Víctor Molina García
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -26,9 +26,10 @@
 """wheelbin -- Compile all Python files inside a wheel to bytecode files."""
 import io
 import os
+import re
 from setuptools import setup
 from setuptools import find_packages
-from src.wheelbin import __version__
+from setuptools.command.sdist import sdist
 
 
 def get_content(name, splitlines=False):
@@ -43,11 +44,34 @@ def get_content(name, splitlines=False):
     return content
 
 
+def get_version(pkgname):
+    """Return package version without importing the file."""
+
+    here = os.path.abspath(os.path.dirname(__file__))
+    path = os.path.join(here, "src", pkgname, "__init__.py")
+    with io.open(path, encoding="utf-8") as fd:
+        pattern = r"""\n__version__[ ]*=[ ]*["']([^"]+)["']"""
+        return re.search(pattern, fd.read()).group(1)
+
+
+class sdist_zip(sdist):
+    """Custom `sdist` that saves source distributions in zip format."""
+
+    def initialize_options(self):
+        """Call `initialize_options` and then set zip as default format."""
+
+        sdist.initialize_options(self)
+        self._default_to_zip()
+
+    def _default_to_zip(self):
+        self.formats = ["zip"]
+
+
 setup(**{
     "name":
         "wheelbin",
     "version":
-        __version__,
+        get_version("wheelbin"),
     "license":
         "MIT",
     "description":
@@ -84,6 +108,7 @@ setup(**{
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "Topic :: Utilities",
     ],
     "keywords": [
@@ -100,17 +125,28 @@ setup(**{
             "wheelbin = wheelbin.__main__:main",
         ]
     },
+    "cmdclass": {
+        "sdist": sdist_zip,
+    },
     "python_requires":
         ", ".join([
             ">=2.6",
             "!=3.0.*",
             "!=3.1.*",
-            "<4.0",
+            "<3.11",
         ]),
     "install_requires":
         get_content("requirements.txt", splitlines=True),
     "extras_require": {
-        "dev":
-            get_content("requirements-dev.txt", splitlines=True),
+        "lint":
+            get_content("requirements-lint.txt", splitlines=True),
+        "test":
+            get_content("requirements-test.txt", splitlines=True),
+    },
+    "project_urls": {
+        "Bug Tracker":
+            "https://github.com/molinav/wheelbin/issues",
+        "Source":
+            "https://github.com/molinav/wheelbin",
     },
 })

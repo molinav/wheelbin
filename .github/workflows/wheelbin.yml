@@ -1,0 +1,114 @@
+name: wheelbin
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+
+  build:
+    strategy:
+      matrix:
+        python-version:
+          [
+            "3.6",
+          ]
+      max-parallel: 1
+    runs-on: ubuntu-latest
+    container: "pylegacy/python:${{ matrix.python-version }}-debian-5"
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v1
+      -
+        name: Build wheel
+        run: |
+          python setup.py sdist bdist_wheel
+      -
+        name: Upload build artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: artifacts-build
+          path: dist
+
+  test:
+    strategy:
+      matrix:
+        python-version:
+          [
+            "2.6",
+            "2.7",
+            "3.3",
+            "3.4",
+            "3.5",
+            "3.6",
+            "3.7",
+            "3.8",
+            "3.9",
+            "3.10",
+          ]
+      max-parallel: 5
+      fail-fast: false
+    needs: build
+    runs-on: ubuntu-latest
+    container: "pylegacy/python:${{ matrix.python-version }}-debian-5"
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v1
+      -
+        name: Download build artifacts
+        uses: actions/download-artifact@v1
+        with:
+          name: artifacts-build
+          path: dist
+      -
+        name: Install package
+        run: |
+          pip install dist/*.whl
+      -
+        name: Test package
+        run: |
+          python -c "import wheelbin"
+
+  upload:
+    strategy:
+      matrix:
+        python-version:
+          [
+            "3.6",
+          ]
+      max-parallel: 1
+    if: startsWith(github.event.ref, 'refs/tags/v')
+    needs: test
+    runs-on: ubuntu-latest
+    container: "pylegacy/python:${{ matrix.python-version }}-debian-5"
+    environment: PyPI
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v1
+      -
+        name: Download build artifacts
+        uses: actions/download-artifact@v1
+        with:
+          name: artifacts-build
+          path: dist
+      -
+        name: Install requirements
+        run: |
+          pip install --prefer-binary twine
+      -
+        name: Upload distributables
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: "${{ secrets.PYPI_TOKEN }}"
+          TWINE_REPOSITORY_URL: "${{ secrets.PYPI_REPOSITORY_URL }}"
+        run: |
+          python -m twine check                                               \
+              dist/*.zip                                                      \
+              dist/*.whl
+          python -m twine upload --skip-existing                              \
+              dist/*.zip                                                      \
+              dist/*.whl

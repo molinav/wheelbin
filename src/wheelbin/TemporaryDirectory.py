@@ -1,7 +1,7 @@
 #! /usr/bin/env python
-# -*- coding: utf8 -*-
+# -*- coding: utf-8 -*-
 #
-# Copyright (C) 2020 Víctor Molina García
+# Copyright (c) 2020 Víctor Molina García
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
