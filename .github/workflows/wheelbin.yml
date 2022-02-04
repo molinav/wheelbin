@@ -9,13 +9,12 @@ jobs:
 
   build:
     strategy:
+      runs-on: ubuntu-latest
       matrix:
         python-version:
-          [
-            "3.6",
-          ]
+          ["3.6"]
       max-parallel: 1
-    runs-on: ubuntu-latest
+      fail-fast: false
     container: "pylegacy/python:${{ matrix.python-version }}-debian-5"
     steps:
       -
@@ -33,25 +32,15 @@ jobs:
           path: dist
 
   test:
+    needs: build
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version:
-          [
-            "2.6",
-            "2.7",
-            "3.3",
-            "3.4",
-            "3.5",
-            "3.6",
-            "3.7",
-            "3.8",
-            "3.9",
-            "3.10",
-          ]
-      max-parallel: 5
+          ["2.6", "2.7", "3.3", "3.4", "3.5", "3.6", "3.7", "3.8",
+           "3.9", "3.10"]
+      max-parallel: 6
       fail-fast: false
-    needs: build
-    runs-on: ubuntu-latest
     container: "pylegacy/python:${{ matrix.python-version }}-debian-5"
     steps:
       -
@@ -73,16 +62,14 @@ jobs:
           python -c "import wheelbin"
 
   upload:
-    strategy:
-      matrix:
-        python-version:
-          [
-            "3.6",
-          ]
-      max-parallel: 1
     if: startsWith(github.event.ref, 'refs/tags/v')
     needs: test
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version:
+          ["3.6"]
+      max-parallel: 1
     container: "pylegacy/python:${{ matrix.python-version }}-debian-5"
     environment: PyPI
     steps:
@@ -106,9 +93,5 @@ jobs:
           TWINE_PASSWORD: "${{ secrets.PYPI_TOKEN }}"
           TWINE_REPOSITORY_URL: "${{ secrets.PYPI_REPOSITORY_URL }}"
         run: |
-          python -m twine check                                               \
-              dist/*.zip                                                      \
-              dist/*.whl
-          python -m twine upload --skip-existing                              \
-              dist/*.zip                                                      \
-              dist/*.whl
+          python -m twine check dist/*
+          python -m twine upload --skip-existing dist/*
