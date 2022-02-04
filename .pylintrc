@@ -15,7 +15,7 @@ ignore-patterns=
 
 # Python code to execute, usually for sys.path manipulation such as
 # pygtk.require().
-init-hook='import sys; sys.setrecursionlimit(8 * sys.getrecursionlimit())'
+init-hook="import sys; sys.path.insert(0, 'src');"
 
 # Use multiple processes to speed up Pylint. Specifying 0 will auto-detect the
 # number of processors available to use.
@@ -60,13 +60,29 @@ confidence=
 # --enable=similarities". If you want to run only the classes checker, but have
 # no Warning level messages displayed, use "--disable=all --enable=classes
 # --disable=W".
-disable=assignment-from-no-return,
-        global-variable-not-assigned,
-        global-variable-undefined,
-        import-outside-toplevel,
-        useless-object-inheritance,
-        super-with-arguments,
-        raise-missing-from
+disable=
+    # Allow freedom with imports.
+    import-outside-toplevel,
+    ungrouped-imports,
+    unused-wildcard-import,
+    wildcard-import,
+    # Allow freedom with redefinitions.
+    redefined-builtin,
+    function-redefined,
+    # Allow freedom with globals.
+    global-variable-not-assigned,
+    global-variable-undefined,
+    # Allow inheriting from object.
+    useless-object-inheritance,
+    # Allow freedom with super calls.
+    super-with-arguments,
+    # Allow assigning to returned None.
+    assignment-from-no-return,
+    assignment-from-none,
+    # Allow freedom with error raises.
+    raise-missing-from,
+    # Allow freedom with string formatting.
+    consider-using-f-string
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
@@ -169,9 +185,8 @@ function-naming-style=snake_case
 #function-rgx=
 
 # Good variable names which should always be accepted, separated by a comma.
-good-names=f,
-           fd,
-           ex,
+good-names=i, j, k, m, n,
+           db, fd, tz, ex, tb,
            Run,
            _
 
@@ -197,7 +212,7 @@ method-naming-style=snake_case
 
 # Regular expression matching correct module names. Overrides module-naming-
 # style.
-module-rgx=(([a-z][a-z0-9_]{1,30})|([A-Z][a-zA-Z0-9]{1,30})|__main__)$
+module-rgx=^(test_)?((?P<snake>_{0,2}[a-z][a-z0-9_]{1,29}_{0,2})|(?P<Pascal>_?[A-Z][a-zA-Z0-9]{1,29}_{0,2}))$
 
 # Colon-delimited sets of names that determine each other's naming style when
 # the name regexes allow several styles.
@@ -233,7 +248,7 @@ indent-after-paren=4
 
 # String used as indentation unit. This is usually "    " (4 spaces) or "\t" (1
 # tab).
-indent-string='    '
+indent-string="    "
 
 # Maximum number of characters on a single line.
 max-line-length=99
