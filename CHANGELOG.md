@@ -10,6 +10,7 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Simplify setup of zip format for `sdist` command using `setup.cfg`.
 - Fix missing opening modes with `io.open` in `setup.py` file.
 - Ensure support for Python 2.6 and Python 3.2.
+- Fix duplicate tag entry in `WHEEL` file when compiling from universal wheel.
 
 ## [1.4.0] - 2022-02-03
 

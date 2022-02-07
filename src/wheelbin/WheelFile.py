@@ -190,8 +190,11 @@ class WheelFile(ZipArchive):
         wheel_path = os.path.join(distinfo_dir, "WHEEL")
 
         with io.open(wheel_path, "r", encoding="utf-8") as fd:
+            # Read lines and only override the ones starting with "Tag:".
             rows = [row if not row.startswith("Tag:")
                     else "Tag: {0}\n".format(value) for row in fd.readlines()]
+            # Remove duplicate tag lines (e.g. if coming from universal wheel).
+            rows = [row for i, row in enumerate(rows) if row not in rows[i + 1:]]
         with io.open(wheel_path, "w", encoding="utf-8") as fd:
             fd.write("".join(rows))
 
