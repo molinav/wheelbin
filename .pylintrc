@@ -63,18 +63,16 @@ confidence=
 disable=
     # Allow freedom with imports.
     import-outside-toplevel,
-    ungrouped-imports,
-    unused-wildcard-import,
-    wildcard-import,
     # Allow freedom with redefinitions.
     redefined-builtin,
     function-redefined,
     # Allow freedom with globals.
+    global-statement,
     global-variable-not-assigned,
     global-variable-undefined,
-    # Allow inheriting from object.
+    undefined-all-variable,
+    # Allow freedom with inheritance.
     useless-object-inheritance,
-    # Allow freedom with super calls.
     super-with-arguments,
     # Allow assigning to returned None.
     assignment-from-no-return,
@@ -187,7 +185,6 @@ function-naming-style=snake_case
 # Good variable names which should always be accepted, separated by a comma.
 good-names=i, j, k, m, n,
            db, fd, tz, ex, tb,
-           Run,
            _
 
 # Include a hint for the correct naming format with invalid-name.
@@ -302,7 +299,7 @@ ignore-docstrings=yes
 ignore-imports=no
 
 # Minimum lines number of a similarity.
-min-similarity-lines=16
+min-similarity-lines=30
 
 
 [SPELLING]
@@ -468,7 +465,7 @@ max-locals=24
 max-parents=18
 
 # Maximum number of public methods for a class (see R0904).
-max-public-methods=24
+max-public-methods=90
 
 # Maximum number of return / yield for function / method body.
 max-returns=6
