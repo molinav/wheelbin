@@ -8,6 +8,7 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 - Simplify setup of zip format for `sdist` command using `setup.cfg`.
+- Fix missing opening modes with `io.open` in `setup.py` file.
 
 ## [1.4.0] - 2022-02-03
 
