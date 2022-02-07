@@ -91,7 +91,7 @@ jobs:
         name: Test package
         run: |
           python -c "import wheelbin"
-          python -m wheelbin dist/*.whl
+          wheelbin dist/*.whl
 
   upload:
     if: startsWith(github.event.ref, 'refs/tags/v')
