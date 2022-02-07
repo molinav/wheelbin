@@ -7,24 +7,52 @@ on:
 
 jobs:
 
-  build:
+  lint:
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version:
-          [
-            "3.6",
-          ]
-      max-parallel: 1
-    runs-on: ubuntu-latest
-    container: "pylegacy/python:${{ matrix.python-version }}-debian-5"
+          ["2.6", "2.7", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "3.8",
+           "3.9", "3.10"]
+      max-parallel: 6
+      fail-fast: false
+    container: "pylegacy/python:${{ matrix.python-version }}-debian-8"
     steps:
       -
         name: Checkout
         uses: actions/checkout@v1
       -
-        name: Build wheel
+        name: Install lint requirements
         run: |
-          python setup.py sdist bdist_wheel
+          pip install -r requirements-lint.txt
+      -
+        name: Run Flake8
+        run: |
+          if [ -x "$(command -v flake8)" ]; then flake8; fi
+      -
+        name: Run PyLint
+        run: |
+          if [ -x "$(command -v pylint)" ]; then pylint src; fi
+
+  build:
+    needs: lint
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version:
+          ["3.6"]
+      max-parallel: 1
+      fail-fast: false
+    container: "pylegacy/python:${{ matrix.python-version }}-debian-8"
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v1
+      -
+        name: Build sdist and wheel
+        run: |
+          python setup.py sdist
+          pip wheel -w dist --no-deps dist/*.zip
       -
         name: Upload build artifacts
         uses: actions/upload-artifact@v1
@@ -33,36 +61,28 @@ jobs:
           path: dist
 
   test:
+    needs: build
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version:
-          [
-            "2.6",
-            "2.7",
-            "3.3",
-            "3.4",
-            "3.5",
-            "3.6",
-            "3.7",
-            "3.8",
-            "3.9",
-            "3.10",
-          ]
-      max-parallel: 5
+          ["2.6", "2.7", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "3.8",
+           "3.9", "3.10"]
+      max-parallel: 6
       fail-fast: false
-    needs: build
-    runs-on: ubuntu-latest
-    container: "pylegacy/python:${{ matrix.python-version }}-debian-5"
+    container: "pylegacy/python:${{ matrix.python-version }}-debian-8"
     steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v1
       -
         name: Download build artifacts
         uses: actions/download-artifact@v1
         with:
           name: artifacts-build
           path: dist
+      -
+        name: Install libmagic
+        run: |
+          apt-get update
+          apt-get install -y libmagic1
       -
         name: Install package
         run: |
@@ -71,24 +91,20 @@ jobs:
         name: Test package
         run: |
           python -c "import wheelbin"
+          wheelbin dist/*.whl
 
   upload:
-    strategy:
-      matrix:
-        python-version:
-          [
-            "3.6",
-          ]
-      max-parallel: 1
     if: startsWith(github.event.ref, 'refs/tags/v')
     needs: test
     runs-on: ubuntu-latest
-    container: "pylegacy/python:${{ matrix.python-version }}-debian-5"
+    strategy:
+      matrix:
+        python-version:
+          ["3.6"]
+      max-parallel: 1
+    container: "pylegacy/python:${{ matrix.python-version }}-debian-8"
     environment: PyPI
     steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v1
       -
         name: Download build artifacts
         uses: actions/download-artifact@v1

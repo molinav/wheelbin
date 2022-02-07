@@ -23,6 +23,7 @@
 # SOFTWARE.
 #
 """wheelbin-cli -- Compile all Python files inside a wheel to bytecode files."""
+from __future__ import print_function
 
 import os
 import sys

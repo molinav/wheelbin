@@ -33,6 +33,7 @@ import shutil
 import fnmatch
 import distutils.util
 from distutils import sysconfig
+from zipfile import ZIP_DEFLATED
 from . PythonFile import PythonFile
 from . ZipArchive import ZipArchive
 from . TemporaryDirectory import TemporaryDirectory
@@ -63,8 +64,22 @@ class WheelFile(ZipArchive):
 
         if path is None:
             path = self.filename
-        shutil.make_archive(self.tmpdir.name, "zip", self.tmpdir.name)
-        shutil.move("{0}.zip".format(self.tmpdir.name), path)
+
+        # Store unpacked contents into a temporary zip file.
+        zippath = "{0}.zip".format(self.tmpdir.name)
+        zipfold = os.path.normpath(self.tmpdir.name)
+        with ZipArchive(zippath, "w", compression=ZIP_DEFLATED) as fd:
+            for dirpath, dirnames, filenames in os.walk(self.tmpdir.name):
+                for name in sorted(dirnames):
+                    item = os.path.normpath(os.path.join(dirpath, name))
+                    fd.write(item, os.path.relpath(item, zipfold))
+                for name in filenames:
+                    item = os.path.normpath(os.path.join(dirpath, name))
+                    if os.path.isfile(item):
+                        fd.write(item, os.path.relpath(item, zipfold))
+
+        # Move temporary zip file into final destination.
+        shutil.move(zippath, path)
 
     def cleanup(self):
         """Clean the temporary unpacking directory."""
@@ -175,8 +190,11 @@ class WheelFile(ZipArchive):
         wheel_path = os.path.join(distinfo_dir, "WHEEL")
 
         with io.open(wheel_path, "r", encoding="utf-8") as fd:
+            # Read lines and only override the ones starting with "Tag:".
             rows = [row if not row.startswith("Tag:")
                     else "Tag: {0}\n".format(value) for row in fd.readlines()]
+            # Remove duplicate tag lines (e.g. if coming from universal wheel).
+            rows = [row for i, row in enumerate(rows) if row not in rows[i + 1:]]
         with io.open(wheel_path, "w", encoding="utf-8") as fd:
             fd.write("".join(rows))
 
