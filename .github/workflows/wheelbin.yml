@@ -16,7 +16,7 @@ jobs:
            "3.9", "3.10"]
       max-parallel: 6
       fail-fast: false
-    container: "pylegacy/python:${{ matrix.python-version }}-debian-5"
+    container: "pylegacy/python:${{ matrix.python-version }}-debian-8"
     steps:
       -
         name: Checkout
@@ -43,7 +43,7 @@ jobs:
           ["3.6"]
       max-parallel: 1
       fail-fast: false
-    container: "pylegacy/python:${{ matrix.python-version }}-debian-5"
+    container: "pylegacy/python:${{ matrix.python-version }}-debian-8"
     steps:
       -
         name: Checkout
@@ -69,7 +69,7 @@ jobs:
            "3.9", "3.10"]
       max-parallel: 6
       fail-fast: false
-    container: "pylegacy/python:${{ matrix.python-version }}-debian-5"
+    container: "pylegacy/python:${{ matrix.python-version }}-debian-8"
     steps:
       -
         name: Checkout
@@ -104,7 +104,7 @@ jobs:
         python-version:
           ["3.6"]
       max-parallel: 1
-    container: "pylegacy/python:${{ matrix.python-version }}-debian-5"
+    container: "pylegacy/python:${{ matrix.python-version }}-debian-8"
     environment: PyPI
     steps:
       -
