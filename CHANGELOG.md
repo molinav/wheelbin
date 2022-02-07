@@ -6,6 +6,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+- Simplify setup of zip format for `sdist` command using `setup.cfg`.
+
 ## [1.4.0] - 2022-02-03
 
 ### Added

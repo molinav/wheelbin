@@ -121,5 +121,9 @@ jobs:
           TWINE_PASSWORD: "${{ secrets.PYPI_TOKEN }}"
           TWINE_REPOSITORY_URL: "${{ secrets.PYPI_REPOSITORY_URL }}"
         run: |
-          python -m twine check dist/*
-          python -m twine upload --skip-existing dist/*
+          python -m twine check                                               \
+              dist/*.zip                                                      \
+              dist/*.whl
+          python -m twine upload --skip-existing                              \
+              dist/*.zip                                                      \
+              dist/*.whl
