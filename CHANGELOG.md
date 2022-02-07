@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and the
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.4.1] - 2022-02-07
 
 ### Fixed
 - Simplify setup of zip format for `sdist` command using `setup.cfg`.
@@ -57,7 +57,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
 [Unreleased]:
-https://github.com/molinav/wheelbin/compare/v1.4.0..develop
+https://github.com/molinav/wheelbin/compare/v1.4.1..develop
+[1.4.1]:
+https://github.com/molinav/wheelbin/compare/v1.4.0..v1.4.1
 [1.4.0]:
 https://github.com/molinav/wheelbin/compare/v1.3.0..v1.4.0
 [1.3.0]:
