@@ -28,7 +28,7 @@ from zipfile import ZipFile
 from zipfile import ZipInfo
 
 
-class ZipArchive(ZipFile):
+class ZipArchive(ZipFile, object):
     """Alternative :class:`~zipfile.ZipFile` with file permission handling."""
 
     def _extract_member(self, member, targetpath, pwd):
@@ -44,3 +44,13 @@ class ZipArchive(ZipFile):
             os.chmod(targetpath, attr)
 
         return targetpath
+
+    def __enter__(self):
+        """Enter method when using the object as a context manager."""
+
+        return self
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        """Exit method when using the object as a context manager."""
+
+        self.close()
