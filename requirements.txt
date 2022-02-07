@@ -1,2 +1,2 @@
-python-magic; platform_system != "Windows"
-python-magic-w64; platform_system == "Windows"
+python-magic; os_name != "nt"
+python-magic-w64; os_name == "nt"
